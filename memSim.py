@@ -99,10 +99,11 @@ if __name__ == "__main__":
     frames = 265                # Default
     pra = "fifo"                # Default
 
-    if len(sys.argv) < 3:
-        print("Not enough arguments")
+    if len(sys.argv) < 2:
+        print("memSim: Not enough arguments!\n")
+        print("usage: memSim <reference-sequence-file.txt> <FRAMES> <PRA>\n")
         sys.exit()
-    if len(sys.argv) == 3:    # Frames given
+    if len(sys.argv) >= 3:    # Frames given
         frames = int(sys.argv[2])
     if len(sys.argv) >= 4:    # Frames and PRA given
         pra = sys.argv[3]
