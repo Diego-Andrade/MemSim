@@ -67,17 +67,22 @@ class MemSim:
 
     def handle_pagefault(self, page):
         data = self.back_store.get_page(page)
+        frame = 0
         if (self.ram.numFrames < self.ram.maxFrames):
-            self.ram.addFrame(self.ram.numFrames, data)
-            self.ram.numFrames += 1
+            frame = self.ram.numFrames                      # Using numFrames as index
+        elif self.pra is 'fifo':
+            frame = self.fifo(page)
+        elif self.pra is 'lru':
+            frame = self.lru(page)
         else:
-            if self.pra is 'fifo':
-                return self.fifo(page)
-        
-            if self.pra is 'lru':
-                return self.lru(page)
-        
-            return self.opt(page)
+            frame = self.opt(page)
+
+        self.unload_frame_from_page_table(frame)
+        self.ram.addFrame(frame, data)
+        self.tlb.loadAddress(page, frame)
+        self.load_frame_in_page_table(page, frame)        
+
+        return frame
 
     def fifo(self, page):
         return 0
@@ -95,17 +100,14 @@ class MemSim:
 
         return entry[0]
 
-    def update_page_table(self, page, frame=None, loaded=1):
-        old_entry = self.page_table[page]
+    def load_frame_in_page_table(self, page, frame):
+        self.page_table[page] = (frame, 1)
 
-        new_entry = None
-        if frame is None:
-            new_entry = (old_entry[0], loaded)
-        else:
-            new_entry = (frame, loaded)
-        
-        self.page_table[page] = new_entry
-
+    def unload_frame_from_page_table(self, frame):
+        for i in range(len(self.page_table)):
+            entry = self.page_table[i]
+            if entry[0] == frame:
+                self.page_table[i] = (entry[0], 0)
 
 if __name__ == "__main__":
     filename = sys.argv[1]
