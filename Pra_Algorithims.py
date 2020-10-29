@@ -74,3 +74,25 @@ class LRU(PRA):
 
    def __repr__(self):
       return ''.join(str(e) for e in self.stack)
+
+class OPT(PRA):
+
+   def getVictim(self, pages, addresses):
+      frame = -1
+      found_at = -1
+
+      for e1 in pages:
+         at = 0
+         for e2 in addresses:
+            if e1[0] == e2[0]:
+               break
+            at += 1
+  
+         if at >= found_at:           # > for selecting first if none or >= for selecting last
+               found_at = at
+               frame = e1[1]
+
+      return frame
+
+   def set_loaded_pages(self, pages):
+      self.loaded_pages = pages
