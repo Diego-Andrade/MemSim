@@ -111,10 +111,12 @@ if __name__ == "__main__":
     frames = 265                # Default
     pra = "fifo"                # Default
 
-    if len(sys.argv) >= 3:    # Frames given
+    if len(sys.argv) < 3:
+        print("Not enough arguments")
+        sys.exit()
+    if len(sys.argv) == 3:    # Frames given
         frames = int(sys.argv[2])
-    
-    if len(sys.argv) == 4:    # Frames and PRA given
+    if len(sys.argv) >= 4:    # Frames and PRA given
         pra = sys.argv[3]
     
     memSim = MemSim(filename, frames, pra)
