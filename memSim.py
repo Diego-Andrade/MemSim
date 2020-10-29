@@ -1,7 +1,9 @@
 import sys
+from Pra_Algorithims import *
 from TLB import TLB
 from Phy_Mem import RAM
 from backingstore import BackingStore
+
 
 class MemSim:
 
@@ -13,7 +15,13 @@ class MemSim:
         # Sys info
         self.addr_filename = address_filename
         self.num_frames = num_frames
-        self.pra = pra
+        self.pra_name = pra
+        if (pra == "fifo"):
+            self.pra = FIFO(self.num_frames)
+        elif (pra == "lru"):
+            self.pra = LRU(self.num_frames)
+        else:
+            self.pra = OPT()
 
         # Modules
         self.tlb = TLB()
@@ -54,6 +62,8 @@ class MemSim:
                     num_frame = self.handle_pagefault(e[0])
 
             logical_add = (e[0] << 8) & e[1]    # could store add instead of rebuilding as well
+            if (pra == "lru"):
+                self.pra.recordUse(num_frame)
             data = self.ram.get_data(num_frame, e[1])
             frame = self.ram.getFrame(num_frame)
             print('{}, {}, {}, {}\n'.format(logical_add, data, num_frame, frame))
@@ -70,12 +80,8 @@ class MemSim:
         frame = 0
         if (self.ram.numFrames < self.ram.maxFrames):
             frame = self.ram.numFrames                      # Using numFrames as index
-        elif self.pra is 'fifo':
-            frame = self.fifo(page)
-        elif self.pra is 'lru':
-            frame = self.lru(page)
         else:
-            frame = self.opt(page)
+            frame = self.pra.getVictim()
 
         self.unload_frame_from_page_table(frame)
         self.ram.addFrame(frame, data)
@@ -83,15 +89,6 @@ class MemSim:
         self.load_frame_in_page_table(page, frame)        
 
         return frame
-
-    def fifo(self, page):
-        return 0
-
-    def lru(self, page):
-        return 0
-
-    def opt(self, page):
-        return 0
 
     def get_frame_from_page_table(self, page):
         entry = self.page_table[page] 
@@ -114,10 +111,12 @@ if __name__ == "__main__":
     frames = 265                # Default
     pra = "fifo"                # Default
 
-    if len(sys.argv) >= 3:    # Frames given
+    if len(sys.argv) < 3:
+        print("Not enough arguments")
+        sys.exit()
+    if len(sys.argv) == 3:    # Frames given
         frames = int(sys.argv[2])
-    
-    if len(sys.argv) == 4:    # Frames and PRA given
+    if len(sys.argv) >= 4:    # Frames and PRA given
         pra = sys.argv[3]
     
     memSim = MemSim(filename, frames, pra)
