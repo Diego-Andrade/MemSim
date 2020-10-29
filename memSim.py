@@ -66,13 +66,18 @@ class MemSim:
         print('TLB Hit Rate = {}'.format(self.tlb_hits / (self.tlb_hits + self.tlb_misses)))
 
     def handle_pagefault(self, page):
-        if self.pra is 'fifo':
-            return self.fifo(page)
+        data = self.back_store.get_page(page)
+        if (self.ram.numFrames < self.ram.maxFrames):
+            self.ram.addFrame(self.ram.numFrames)
+            self.ram.numFrames += 1
+        else:
+            if self.pra is 'fifo':
+                return self.fifo(page)
         
-        if self.pra is 'lru':
-            return self.lru(page)
+            if self.pra is 'lru':
+                return self.lru(page)
         
-        return self.opt(page)
+            return self.opt(page)
 
     def fifo(self, page):
         return 0

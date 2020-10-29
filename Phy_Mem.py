@@ -17,11 +17,7 @@ class RAM:
       return self.frames[frameNum]
 
    def addFrame(self, frameNum, data):
-      if (self.numFrames < self.maxFrames):
-         self.frames[self.numFrames] = data
-         self.numFrames += 1
-      else:
-         self.frames[frameNum] = data
+      self.frames[frameNum] = data
 
    def get_data(self, frameNum, offset):
       byteStr = self.frames[frameNum]
