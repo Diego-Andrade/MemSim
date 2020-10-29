@@ -1,21 +1,29 @@
+from Pra_Algorithims import FIFO
+
+
 class TLB:
-   entries = []
-   maxEntries = 0
-   incrementor = 0
 
    def __init__(self, maxE = 16):
-      self.entries = [(None, None)]*maxE
-      self.maxEntries = maxE
+      self.pra = FIFO(maxE, [(None, None)])
 
    def checkAddress(self, pageNum):
-      for i in self.entries:
+      for i in self.pra.stack:
          if (i[0] == pageNum):
             return i[1]
       return -1 
 
    def loadAddress(self, pageNum, frameNum):
-      self.entries[self.incrementor] = (pageNum, frameNum)
-      if (self.incrementor >= self.maxEntries):
-         self.incrementor = 0
+      if self.pra.numEntries < self.pra.maxEntries:
+         self.pra.push([(pageNum, frameNum)])
+         self.pra.numEntries += 1
       else:
-         self.incrementor += 1
+         oldPage = -1
+         for i in self.pra.numEntries:
+            if i[1] == frameNum:
+               oldPage = i[0]
+         if oldPage != -1:
+            self.pra.remove([(oldPage, frameNum)])
+            self.pra.push([(pageNum, frameNum)])
+         self.pra.getVictim(0)
+         self.pra.push([(pageNum, frameNum)])
+      

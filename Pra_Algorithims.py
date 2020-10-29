@@ -2,19 +2,51 @@ class PRA:
 
    def getVictim(self):
       raise NotImplementedError
+   def recordUse(self):
+      raise NotImplementedError
 
 class FIFO(PRA):
    stack = []
+   numEntries = 0
+   maxEntries = 0
    
-   def __init__(self, numFrames = 0):
-      self.stack = [0] * numFrames
+   def __init__(self, numFrames = 0, entry = 0):
+      self.stack = [entry] * numFrames
+      self.numEntries = 0
+      self.maxEntries = numFrames
       for frame in range(numFrames):
          self.stack[frame] = frame
+         self.numEntries += 1
 
-   def getVictim(self):
+   def getVictim(self, cycleVictim = 1):
       frame = self.stack.pop(0)
-      self.stack.append(frame)
+      if cycleVictim == 1:
+         self.push(frame)
+      else:
+         self.numEntries -= 1
       return frame
+
+   def recordUse(self, entry):
+      try:
+         index = self.stack.index(entry)
+         self.stack.pop(index)
+         self.stack.append(entry)
+      except ValueError:
+         print("FIFO.recordUse Failed")
+         return
+
+   def push(self, entry):
+      self.stack.append(entry)
+      self.numEntries -= 1
+
+   def remove(self, entry):
+      try:
+         index = self.stack.index(entry)
+         self.stack.pop(index)
+         self.numEntries -= 1
+      except ValueError:
+         print("Nothing Cleared")
+         return
 
    def __repr__(self):
       return ''.join(str(e) for e in self.stack)
