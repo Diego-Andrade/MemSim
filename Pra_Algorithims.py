@@ -46,21 +46,21 @@ class LRU(PRA):
 class OPT(PRA):
 
    def getVictim(self, pages, addresses):
-      future = -1
-      by_page = -1
+      frame = -1
+      found_at = -1
 
-      for i in range(len(pages)):
+      for e1 in pages:
          at = 0
-         for e in addresses:
-            if pages[i][0] == e[0]:
+         for e2 in addresses:
+            if e1[0] == e2[0]:
                break
             at += 1
   
-         if at >= future:           # > for selecting first if none or >= for selecting last
-               future = at
-               by_page = i
+         if at >= found_at:           # > for selecting first if none or >= for selecting last
+               found_at = at
+               frame = e1[1]
 
-      return pages[by_page][1]
+      return frame
 
    def set_loaded_pages(self, pages):
       self.loaded_pages = pages
