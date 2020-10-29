@@ -16,6 +16,9 @@ class RAM:
    def addFrame(self, frameNum, data):
       self.frames[frameNum] = data
 
+      if (self.numFrames < self.maxFrames):
+         self.numFrames += 1          
+
    def get_data(self, frameNum, offset):
       byteStr = self.frames[frameNum]
       if (offset / self.bytesPerWord):
