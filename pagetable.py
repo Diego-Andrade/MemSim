@@ -26,11 +26,11 @@ class PageTable:
         return self.page_table[1]
 
     # Return list of loaded frames
-    def loaded_pages(self):
+    def get_loaded_pages(self):
         lf = []
 
         for i in range(len(self.page_table)):
             if self.page_table[i][1] == 1:
-                lf.append(i)
+                lf.append((i, self.page_table[i][0]))
 
         return lf

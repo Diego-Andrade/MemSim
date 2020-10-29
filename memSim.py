@@ -16,6 +16,12 @@ class MemSim:
         self.addr_filename = address_filename
         self.num_frames = num_frames
         self.pra_name = pra
+
+        # Modules
+        self.tlb = TLB()
+        self.page_table = PageTable()       # List of tuples where tuple is (frame, loaded)
+        self.ram = RAM(num_frames)  
+        self.back_store = BackingStore(BACKINGSTORE_FILENAME, PAGE_SIZE) 
         if (pra == "fifo"):
             self.pra = FIFO(self.num_frames)
         elif (pra == "lru"):
@@ -23,19 +29,12 @@ class MemSim:
         else:
             self.pra = OPT()
 
-        # Modules
-        self.tlb = TLB()
-        self.page_table = PageTable()       # List of tuples where tuple is (frame, loaded)
-        self.ram = RAM(num_frames)  
-        self.back_store = BackingStore(BACKINGSTORE_FILENAME, PAGE_SIZE) 
-
-        self.pra_stack = []      # List used page replacement algorithms FIFI and LRU
-
         # Mem Calls
         self.addresses = []         # List of tuples of (page, offset)
         self.translate()
 
         # Analytics
+        self.total_access = 0
         self.pagefaults = 0
         self.tlb_misses = 0
         self.tlb_hits = 0
@@ -68,7 +67,9 @@ class MemSim:
             frame = self.ram.getFrame(num_frame)
             print('{}, {}, {}, {}\n'.format(logical_add, data, num_frame, frame))
 
-        print('Number of Translated Addresses = {}'.format(len(self.addresses)))
+            total_access += 1
+
+        print('Number of Translated Addresses = {}'.format(self.total_access))
         print('Page Faults = {}'.format(self.pagefaults))
         print('Page Fault Rate = {}'.format(self.pagefaults / len(self.addresses)))
         print('TLB Hits = {}'.format(self.tlb_hits))
@@ -81,7 +82,10 @@ class MemSim:
         if (self.ram.numFrames < self.ram.maxFrames):
             frame = self.ram.numFrames                      # Using numFrames as index
         else:
-            frame = self.pra.getVictim()
+            if (self.pra_name == "opt"):
+                frame = self.pra.getVictim(self.page_table.get_loaded_pages, self.addresses[self.total_access+1:])
+            else:
+                frame = self.pra.getVictim()
 
         self.page_table.unload_frame(frame)
         self.ram.addFrame(frame, data)
