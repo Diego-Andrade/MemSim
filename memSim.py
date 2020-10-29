@@ -21,7 +21,7 @@ class MemSim:
         self.ram = RAM(num_frames)  
         self.back_store = BackingStore(BACKINGSTORE_FILENAME, PAGE_SIZE) 
 
-        self.pra_data = []      # List used page replacement algorithms FIFI and LRU
+        self.pra_stack = []      # List used page replacement algorithms FIFI and LRU
 
         # Mem Calls
         self.addresses = []         # List of tuples of (page, offset)
@@ -68,7 +68,7 @@ class MemSim:
     def handle_pagefault(self, page):
         data = self.back_store.get_page(page)
         if (self.ram.numFrames < self.ram.maxFrames):
-            self.ram.addFrame(self.ram.numFrames)
+            self.ram.addFrame(self.ram.numFrames, data)
             self.ram.numFrames += 1
         else:
             if self.pra is 'fifo':

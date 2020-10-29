@@ -1,6 +1,3 @@
-from _typeshed import BytesPath
-
-
 class RAM:
    frames = []
    numFrames = 0
