@@ -27,17 +27,61 @@ class MemSim:
         self.addresses = []         # List of tuples of (page, offset)
         self.translate()
 
+        # Analytics
+        self.pagefaults = 0
+        self.tlb_misses = 0
+        self.tlb_hits = 0
+
     def translate(self):
         f_addr = open(self.addr_filename, "r")
         for line in f_addr:
             i_addr = int(line)
             page = i_addr >> 8
-            offset = i_addr & 0xF
+            offset = i_addr & 0xFF
             self.addresses.append((page, offset))
         f_addr.close()
     
     def start(self):
-        print(self.addresses)
+        for e in self.addresses:    # e = (page, offset)
+            num_frame = self.tlb.checkAddress(e[0])
+            if num_frame != -1:
+                self.tlb_hits += 1
+            else:
+                self.tlb_misses += 1
+                num_frame = self.get_frame_from_page_table(e[0])
+                if num_frame == -1:
+                    pagefaults += 1
+                    num_frame = self.handle_pagefault(e[0])
+
+            logical_add = (e[0] << 8) & e[1]    # could store add instead of rebuilding as well
+            data = self.ram.get_data(num_frame, e[1])
+            frame = self.ram.getFrame(num_frame)
+            print('{}, {}, {}, {}\n'.format(logical_add, data, num_frame, frame))
+
+        print('Number of Translated Addresses = {}'.format(len(self.addresses)))
+        print('Page Faults = {}'.format(self.pagefaults))
+        print('Page Fault Rate = {}'.format(self.pagefaults / len(self.addresses)))
+        print('TLB Hits = {}'.format(self.tlb_hits))
+        print('TLB Misses = {}'.format(self.tlb_misses))
+        print('TLB Hit Rate = {}'.format(self.tlb_hits / (self.tlb_hits + self.tlb_misses)))
+
+    def handle_pagefault(self, page):
+        if self.pra is 'fifo':
+            return self.fifo(page)
+        
+        if self.pra is 'lru':
+            return self.lru(page)
+        
+        return self.opt(page)
+
+    def fifo(self, page):
+        return 0
+
+    def lru(self, page):
+        return 0
+
+    def opt(self, page):
+        return 0
 
     def get_frame_from_page_table(self, page):
         entry = self.page_table[page] 
