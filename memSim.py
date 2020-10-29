@@ -50,7 +50,7 @@ class MemSim:
                 self.tlb_misses += 1
                 num_frame = self.get_frame_from_page_table(e[0])
                 if num_frame == -1:
-                    pagefaults += 1
+                    self.pagefaults += 1
                     num_frame = self.handle_pagefault(e[0])
 
             logical_add = (e[0] << 8) & e[1]    # could store add instead of rebuilding as well
