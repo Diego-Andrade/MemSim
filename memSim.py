@@ -3,7 +3,7 @@ from Pra_Algorithims import *
 from TLB import TLB
 from Phy_Mem import RAM
 from backingstore import BackingStore
-
+from pagetable import PageTable
 
 class MemSim:
 
@@ -25,7 +25,7 @@ class MemSim:
 
         # Modules
         self.tlb = TLB()
-        self.page_table = [(-1, 0)] * num_frames       # List of tuples where tuple is (frame, loaded)
+        self.page_table = PageTable()       # List of tuples where tuple is (frame, loaded)
         self.ram = RAM(num_frames)  
         self.back_store = BackingStore(BACKINGSTORE_FILENAME, PAGE_SIZE) 
 
@@ -56,7 +56,7 @@ class MemSim:
                 self.tlb_hits += 1
             else:
                 self.tlb_misses += 1
-                num_frame = self.get_frame_from_page_table(e[0])
+                num_frame = self.page_table.get_frame(e[0])
                 if num_frame == -1:
                     self.pagefaults += 1
                     num_frame = self.handle_pagefault(e[0])
@@ -83,28 +83,12 @@ class MemSim:
         else:
             frame = self.pra.getVictim()
 
-        self.unload_frame_from_page_table(frame)
+        self.page_table.unload_frame(frame)
         self.ram.addFrame(frame, data)
         self.tlb.loadAddress(page, frame)
-        self.load_frame_in_page_table(page, frame)        
+        self.page_table.load_frame(page, frame)        
 
         return frame
-
-    def get_frame_from_page_table(self, page):
-        entry = self.page_table[page] 
-        if entry[1] == 0:
-            return -1
-
-        return entry[0]
-
-    def load_frame_in_page_table(self, page, frame):
-        self.page_table[page] = (frame, 1)
-
-    def unload_frame_from_page_table(self, frame):
-        for i in range(len(self.page_table)):
-            entry = self.page_table[i]
-            if entry[0] == frame:
-                self.page_table[i] = (entry[0], 0)
 
 if __name__ == "__main__":
     filename = sys.argv[1]
