@@ -1,0 +1,6 @@
+
+Diego Andrade andrader@calpoly.edu
+
+
+Notes:
+For page replacement algorithm opt we noticed that there is no documented behavor for when no page is being reference in the future, as such our code selects a frame which corresponds to the last page registered in the pagetable.
