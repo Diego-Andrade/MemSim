@@ -10,6 +10,7 @@ class MemSim:
     def __init__(self, address_filename, num_frames, pra):
         # CONST
         PAGE_SIZE = 256
+        TLB_ENTRIES = 16
         BACKINGSTORE_FILENAME = "BACKING_STORE.bin"
 
         # Sys info
@@ -18,7 +19,7 @@ class MemSim:
         self.pra_name = pra
 
         # Modules
-        self.tlb = TLB()
+        self.tlb = TLB(TLB_ENTRIES)
         self.page_table = PageTable()       # List of tuples where tuple is (frame, loaded)
         self.ram = RAM(num_frames)  
         self.back_store = BackingStore(BACKINGSTORE_FILENAME, PAGE_SIZE) 
@@ -60,7 +61,7 @@ class MemSim:
                     self.pagefaults += 1
                     num_frame = self.handle_pagefault(e[0])
 
-            logical_add = (e[0] << 8) & e[1]    # could store add instead of rebuilding as well
+            logical_add = (e[0] << 8) | e[1]    # could store add instead of rebuilding as well
             if (pra == "lru"):
                 self.pra.recordUse(num_frame)
             data = self.ram.get_data(num_frame, e[1])
@@ -95,7 +96,6 @@ class MemSim:
         return frame
 
 if __name__ == "__main__":
-    filename = sys.argv[1]
     frames = 265                # Default
     pra = "fifo"                # Default
 
@@ -107,6 +107,8 @@ if __name__ == "__main__":
         frames = int(sys.argv[2])
     if len(sys.argv) >= 4:    # Frames and PRA given
         pra = sys.argv[3]
+
+    filename = sys.argv[1]
     
     memSim = MemSim(filename, frames, pra)
     memSim.start()

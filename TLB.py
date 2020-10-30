@@ -4,7 +4,7 @@ from Pra_Algorithims import FIFO
 class TLB:
 
    def __init__(self, maxE = 16):
-      self.pra = FIFO(maxE, [(None, None)])
+      self.pra = FIFO(maxE, [(None, None)] , 0)
 
    def checkAddress(self, pageNum):
       for i in self.pra.stack:
