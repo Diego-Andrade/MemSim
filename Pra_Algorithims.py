@@ -11,13 +11,13 @@ class FIFO(PRA):
    numEntries = 0
    maxEntries = 0
    
-   def __init__(self, numFrames = 0, entry = None, fill = 1):
-      self.stack = [entry] * numFrames
+   def __init__(self, numFrames = 0, fill = 1):
+      self.stack = []
       self.numEntries = 0
       self.maxEntries = numFrames
       if fill == 1:
          for frame in range(numFrames):
-            self.stack[frame] = frame
+            self.stack.append(frame)
             self.numEntries += 1
 
    def getVictim(self, cycleVictim = 1):
@@ -39,7 +39,7 @@ class FIFO(PRA):
 
    def push(self, entry):
       self.stack.append(entry)
-      self.numEntries -= 1
+      self.numEntries += 1
 
    def remove(self, entry):
       try:
