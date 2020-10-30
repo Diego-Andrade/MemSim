@@ -60,6 +60,8 @@ class MemSim:
                 if num_frame == -1:
                     self.pagefaults += 1
                     num_frame = self.handle_pagefault(e[0])
+                else:
+                    self.tlb.loadAddress(e[0], num_frame)
 
             logical_add = (e[0] << 8) | e[1]    # could store add instead of rebuilding as well
             if (pra == "lru"):
