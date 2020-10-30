@@ -83,14 +83,15 @@ class OPT(PRA):
       frame = -1
       found_at = -1
 
-      for e1 in pages:
+      sorted_pages = sorted(pages, key = lambda x: x[1])    # Used to go in frame order not pages
+      for e1 in sorted_pages:
          at = 0
          for e2 in addresses:
             if e1[0] == e2[0]:
                break
             at += 1
   
-         if at >= found_at:           # > for selecting first if none or >= for selecting last
+         if at > found_at:           # > for selecting first if none or >= for selecting last
                found_at = at
                frame = e1[1]
 
