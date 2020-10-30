@@ -30,7 +30,7 @@ class MemSim:
         else:
             self.pra = OPT()
 
-        # Mem Calls
+        # Reference Sequence
         self.addresses = []         # List of tuples of (page, offset)
         self.translate()
 
