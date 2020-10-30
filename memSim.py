@@ -67,7 +67,7 @@ class MemSim:
             frame = self.ram.getFrame(num_frame)
             print('{}, {}, {}, {}\n'.format(logical_add, data, num_frame, frame))
 
-            total_access += 1
+            self.total_access += 1
 
         print('Number of Translated Addresses = {}'.format(self.total_access))
         print('Page Faults = {}'.format(self.pagefaults))
