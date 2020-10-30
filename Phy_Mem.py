@@ -6,7 +6,7 @@ class RAM:
    
    def __init__(self, numFrames = 10, bytesPerWord = 4):
       self.frames = [None] * numFrames
-      self.numFrames = numFrames
+      self.numFrames = 0
       self.maxFrames = numFrames
       self.bytesPerWord = bytesPerWord
 

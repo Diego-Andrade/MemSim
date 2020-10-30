@@ -68,7 +68,7 @@ class MemSim:
                 self.pra.recordUse(num_frame)
             data = self.ram.get_data(num_frame, e[1])
             frame = self.ram.getFrame(num_frame)
-            print('{}, {}, {}, {}\n'.format(logical_add, data, num_frame, frame))
+            print('{}, {}, {}, {}'.format(logical_add, data, num_frame, frame))
 
             self.total_access += 1
 
@@ -86,7 +86,7 @@ class MemSim:
             frame = self.ram.numFrames                      # Using numFrames as index
         else:
             if (self.pra_name == "opt"):
-                frame = self.pra.getVictim(self.page_table.get_loaded_pages, self.addresses[self.total_access+1:])
+                frame = self.pra.getVictim(self.page_table.get_loaded_pages(), self.addresses[self.total_access+1:])
             else:
                 frame = self.pra.getVictim()
 
